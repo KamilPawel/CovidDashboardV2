@@ -12,19 +12,17 @@ import './Covid.css'
 
 window.data = parkData
 const correctCoortdinates = (x, y) => {
-    return [x + 0.4, y - 0.6]
+    return [x + 0.5, y - 5.5]
 }
 
 const [x, y] = [53.581794, -4.562387]
 
-const [mx, my] = [52.950001, -1.150000]
-
-const [lx, ly] = correctCoortdinates(51.509865, -0.118092)
-
-const [manX, manY] = correctCoortdinates(mx, my)
+const [eX, eY] = correctCoortdinates(52.3555, 1.1743)
+const [wX, wY] = correctCoortdinates(52.1307, 3.7837)
+const [sX, sY] = correctCoortdinates(56.4907, 5 - 4.2026)
 
 
-const CovidMap = () => {
+const CovidMap = (props) => {
     const [viewport, setViewport] = useState({
         width: '30vw',
         height: '80vh',
@@ -33,7 +31,9 @@ const CovidMap = () => {
         zoom: 4
     });
 
-
+    const {countryData} = props
+    console.log('printing the props')
+    console.log(countryData)
 
     return (
         <ReactMapGL
@@ -45,13 +45,26 @@ const CovidMap = () => {
             console.log(viewport.zoom)
             setViewport(newViewport)
         }}
-        mapStyle = {'mapbox://styles/noplantaingobanana/cks0ixbrt61od18nx0z6z7gtp'}
+        mapStyle = {'mapbox://styles/noplantaingobanana/cks2coj1h2e8718o4j4atiyjf'}
+
         >
             <Marker key = {2} 
-                latitude = {manX} 
-                longitude = {manY}>
-                    <Circle data = {[23, 493]} colour = 'rgba(255, 0, 0, 0.2)' radious = {20}/>
+                latitude = {eX} 
+                longitude = {eY}>
+                    <Circle data = {[534, 234]} colour = 'rgba(0, 2, 0, 0.5)' radious = {20}/>
             </Marker>
+              <Marker key = {2} 
+                latitude = {wX} 
+                longitude = {wY}>
+                    <Circle data = {[23, 493]} colour = 'rgba(0, 2, 0, 0.5)' radious = {20}/>
+            </Marker>
+              <Marker key = {2} 
+                latitude = {sX} 
+                longitude = {sY}>
+                    <Circle data = {[23, 243]} colour = 'rgba(0, 2, 0, 0.5)' radious = {20}/>
+            </Marker>
+
+
         </ReactMapGL>
   );
 }

@@ -1,7 +1,16 @@
 
-
 span {
     background: #F5F5DC;
     color: black;
     font-size: 12px;
+}
+
+.graphStyle {
+    background: white;
+    width: 120%;
+    height: auto;
+}
+
+.graph canvas{
+    width: 50vw;
 }
