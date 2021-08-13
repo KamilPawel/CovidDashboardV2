@@ -106,5 +106,4 @@ export class Circle extends Component {
         )
     }
 }
-
 export default Circle
