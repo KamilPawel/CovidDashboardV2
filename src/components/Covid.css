@@ -7,10 +7,26 @@ span {
 
 .graphStyle {
     background: white;
-    width: 120%;
     height: auto;
+    width: 130%;
 }
 
-.graph canvas{
-    width: 50vw;
+.map {
+    display: flex !important;
+    margin-left: 35vw;
+}
+
+@media only screen and (min-width: 600px) {
+    .graph canvas{
+    width: 60vw;
+}
+
+.map {
+    margin-left: 15vw;
+}
+
+.pie {
+    width: 30vw;
+    display: flex;
+}
 }

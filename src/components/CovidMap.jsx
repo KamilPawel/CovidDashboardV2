@@ -24,7 +24,7 @@ const [sX, sY] = correctCoortdinates(56.4907, 5 - 4.2026)
 
 const CovidMap = (props) => {
     const [viewport, setViewport] = useState({
-        width: '30vw',
+        width: '70vw',
         height: '80vh',
         latitude: x,
         longitude: y,

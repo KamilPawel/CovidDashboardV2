@@ -11,15 +11,23 @@ import { Pie } from 'react-chartjs-2';
 
 
 const correctCoortdinates = (x, y) => {
-    return [x + 0.5, y - 5.5]
+    return [x + 2, y - 4]
 }
 
 const [x, y] = [53.581794, -4.562387]
 
 const [eX, eY] = correctCoortdinates(52.3555, 1.1743)
-const [wX, wY] = correctCoortdinates(52.1307, 3.7837)
-const [sX, sY] = correctCoortdinates(56.4907, 5 - 4.2026)
+const [wX, wY] = correctCoortdinates(52.1307 - 1.5, 3.7837 - 4)
+const [sX, sY] = correctCoortdinates(56.4907 - 2, 0)
 
+
+const makeArr = (maxNum) => {
+  let arr = []
+  for (let i = maxNum - 1; i >= 0; i--) {
+    arr.push(i)
+  }
+  return arr
+}
 
 
 const correctDate = (dateStr) => {
@@ -49,6 +57,11 @@ let scotland = 'https://api.coronavirus.data.gov.uk/v1/data?' +
 
 let dates = 'https://api.coronavirus.data.gov.uk/v1/data?%27%27filters=areaType=nation;areaName=england&%27%27structure={%22date%22:%22date%22}'
 
+let uk ='https://api.coronavirus.data.gov.uk/v1/data?' +
+    'filters=areaType=overview&' +
+    'structure={"newCases":"newCasesByPublishDate","newDeaths":"newDeaths28DaysByPublishDate"}'
+
+
 
 export class PlotData extends Component {
 
@@ -74,7 +87,7 @@ export class PlotData extends Component {
             },
             viewport: {
                 width: '30vw',
-                height: '80vh',
+                height: '30vh',
                 latitude: x,
                 longitude: y,
                 zoom: 4
@@ -119,17 +132,17 @@ export class PlotData extends Component {
                     deaths: deathsE.reverse()
                 }
             })
-            let casesA = []
-            let deathA = []
-            for (let i = 0; i < this.state.englandData.cases.length; i++)
-            {
-                casesA.push(this.state.englandData.cases[i] + this.state.walesData.cases[i] + this.state.scotlandData.cases[i])
-                deathA.push(this.state.englandData.deaths[i] + this.state.walesData.deaths[i] + this.state.scotlandData.deaths[i])
-            }
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    axios.get(uk).then(res => {
+            const [casesE, deathsE] = [res.data.data.map(obj => obj.newCases), res.data.data.map(obj => obj.newDeaths)]
+            
             this.setState({
-                ukData : {
-                    cases: casesA,
-                    deaths: deathA
+                ukData: {
+                    cases: casesE.reverse(),
+                    deaths: deathsE.reverse()
                 }
             })
         })
@@ -137,12 +150,8 @@ export class PlotData extends Component {
             console.log(err)
         })
     
+    
     // Cleaning up data
-
-  }
-  
-  render() {
-    window.state = this.state
     const countriesCases = [this.state.englandData.cases, this.state.walesData.cases, this.state.scotlandData.cases]
     const countriesDeaths = [this.state.englandData.deaths, this.state.walesData.deaths, this.state.scotlandData.deaths]
     for (let i = 0; i < countriesCases.length; i++) {
@@ -150,13 +159,18 @@ export class PlotData extends Component {
         if (countriesCases[i][j] === 0) countriesCases[i][j] = countriesCases[i][j - 1]
       }
     }
-
+  
     for (let i = 0; i < countriesDeaths.length; i++) {
       for (let j = 0; j < countriesDeaths[i].length; j++) {
         if (countriesCases[i][j] === 0 || countriesCases[i][j] === null) countriesDeaths[i][j] = 1
       }
     }
     
+  }
+  
+  render() {
+    
+    window.state = this.state
     let graphDataStructure = {
             labels: this.state.datesData,
             datasets: [
@@ -203,7 +217,7 @@ export class PlotData extends Component {
 
         const graphOptions = {
             responsive: true,
-            title: { text: "UK COVID Cases Tracker ", display: true },
+            title: { text: `Population Affected vs Time - Last Updated: ${new Date()}`, display: true },
             scales: {
               yAxes: [
                 {
@@ -359,23 +373,26 @@ export class PlotData extends Component {
         return (
             <div>
                 <div className = 'graph'>
-                    <h2>Graph Test</h2>
+                    <h2>Live Covid-19 Tracker of Great Britan</h2>
                 <Bar 
                 data = {graphDataStructure}
                 options = {graphOptions}
                 />
-                <Pie data = {graphDataStructure2} options = {graphOptions2}/>
-                <Pie data = {graphDataStructure3} options = {graphOptions3}/>
+                <div className = 'pie'>
+                    <Pie data = {graphDataStructure2} options = {graphOptions2}/>
+                    <Pie data = {graphDataStructure3} options = {graphOptions3}/>
+                </div>
+                <div className ='map'>
                 <ReactMapGL
                     {...this.state.viewport}
                     mapboxApiAccessToken = {'pk.eyJ1Ijoibm9wbGFudGFpbmdvYmFuYW5hIiwiYSI6ImNrczBobnducTFrMTcycHBzc3VndTRncnUifQ.iZmdLh2E80msmveE9AjhiA'}
                     onViewportChange = {viewport => {
-                        const newViewport = viewport
-                        newViewport.zoom = 4
-                        console.log(viewport.zoom)
-                        this.setState({
-                            viewport: newViewport
-                        })
+                      const newViewport = viewport
+                      newViewport.zoom = 4
+                      console.log(viewport.zoom)
+                      this.setState({
+                        viewport: newViewport
+                      })
                     }}
                     mapStyle = {'mapbox://styles/noplantaingobanana/cks2coj1h2e8718o4j4atiyjf'}
                     
@@ -383,19 +400,21 @@ export class PlotData extends Component {
                         <Marker key = {2} 
                             latitude = {eX} 
                             longitude = {eY}>
-                            <Circle cases = {this.state.englandData.cases[this.state.englandData.cases.length - 1]} colour = 'rgba(0, 2, 0, 0.5)' radious = {mapData.countries.england.cases * mapData.countries.england.cases }/>
+                            <Circle title = 'England' data = {[this.state.englandData.cases[this.state.englandData.cases.length - 1], this.state.englandData.deaths[this.state.englandData.deaths.length - 1]]} colour = 'rgba(255, 255, 255, 0.5)' radious = {54}/>
                         </Marker>
                         <Marker key = {2} 
                             latitude = {wX} 
                             longitude = {wY}>
-                                <Circle data = {[23, 493]} colour = 'rgba(0, 2, 0, 0.5)' radious = {20}/>
+                            <Circle title = 'Wales' data = {[this.state.englandData.cases[this.state.walesData.cases.length - 1], this.state.walesData.deaths[this.state.walesData.deaths.length - 1]]} colour = 'rgba(255, 255, 255, 0.5)' radious = {10}/>
                         </Marker>
                         <Marker key = {2} 
                             latitude = {sX} 
                             longitude = {sY}>
-                                <Circle data = {[23, 243]} colour = 'rgba(0, 2, 0, 0.5)' radious = {20}/>
+                            <Circle title = 'Scotland' data = {[this.state.scotlandData.cases[this.state.scotlandData.cases.length - 1], this.state.scotlandData.deaths[this.state.scotlandData.deaths.length - 1]]} colour = 'rgba(255, 255, 255, 0.5)' radious = {25}/>
                         </Marker>
-                    </ReactMapGL>       
+
+                    </ReactMapGL> 
+                    </div>
                 </div>
             </div>
         )

@@ -1,4 +1,4 @@
-/*
+
 import React from 'react'
 import { useState } from 'react'
 const Circle = (props) => {
@@ -27,7 +27,7 @@ const Circle = (props) => {
 
     const handleEnter = () => {
         console.log(props.data)
-        setTextBox(`New Cases: ${props.data[0]}, New Deaths: ${props.data[1]}`)
+        setTextBox(`${props.title} - New Cases: ${props.data[0]}, New Deaths: ${props.data[1]}`)
         setTextBoxColour({
             background: 'blue'
         })
@@ -47,14 +47,13 @@ const Circle = (props) => {
             <div style = {circleStyle} onMouseEnter = {handleEnter} onMouseLeave = {handleLeave}>
             </div>
             <span>{textBox}</span>
-
         </div>
     )
     
 }
 
+/*
 export default Circle
-*/
 import React, { Component } from 'react'
 
 export class Circle extends Component {
@@ -105,5 +104,5 @@ export class Circle extends Component {
         </div>
         )
     }
-}
+}*/
 export default Circle
